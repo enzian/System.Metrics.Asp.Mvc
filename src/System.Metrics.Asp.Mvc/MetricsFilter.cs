@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace System.Metrics.Asp.Mvc
 {
-    public delegate Task MetricsHandler(Endpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next);
+    public delegate Task<ResourceExecutedContext> MetricsHandler(Endpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next);
 
     public class MetricsFilter : IAsyncResourceFilter, IMetricsBuilder
     {
@@ -16,7 +16,7 @@ namespace System.Metrics.Asp.Mvc
             };
         }
 
-        internal Func<Endpoint, ResourceExecutingContext, ResourceExecutionDelegate, Task<ResourceExecutedContext>> _handler { get; set; }
+        internal MetricsHandler _handler { get; set; }
 
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
@@ -29,14 +29,17 @@ namespace System.Metrics.Asp.Mvc
 
         public MetricsHandler UseMetricsMiddleware(MetricsHandler handler)
         {
+            var oldHandler = _handler;
             MetricsHandler h = delegate(Endpoint metricsEndpoint, ResourceExecutingContext b, ResourceExecutionDelegate c)
             {
                 ResourceExecutionDelegate next = async () => {
-                    return await _handler(metricsEndpoint, b, c);
+                    return await oldHandler(metricsEndpoint, b, c);
                 };
 
                 return handler(metricsEndpoint, b, next);
             };
+
+            _handler = h;
 
             return h;
         }

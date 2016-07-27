@@ -1,15 +1,24 @@
 
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace System.Metrics.Asp.Mvc.Extensions
 {
     public static class MetricsExtensions
     {
-        public static IMvcBuilder AddMetrics(this IServiceCollection services)
+        public static void AddMetrics(this IServiceCollection services, Action<IMetricsBuilder> metricsSetup, Action<Endpoint> endpointSetup)
         {
-            var builder = services.AddMvcCore(x => x.Filters.Add(new MetricsFilter()));
-            return new MvcBuilder(builder.Services, builder.PartManager);
+            var metricsFilter = new MetricsFilter();
+            metricsSetup(metricsFilter);
+
+            services.AddMvcCore(x => x.Filters.Add(metricsFilter));
+
+            services.AddScoped<Endpoint>(x =>
+            {
+                var service = new StandardEndpoint();
+                Console.WriteLine("Constructung a logging Service");
+                endpointSetup(service);
+                return service;
+            });
         }
     }
 }
