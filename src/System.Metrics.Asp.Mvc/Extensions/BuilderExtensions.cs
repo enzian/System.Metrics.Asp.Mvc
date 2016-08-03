@@ -15,7 +15,6 @@ namespace System.Metrics.Asp.Mvc.Extensions
             services.AddScoped<Endpoint>(x =>
             {
                 var service = new StandardEndpoint();
-                Console.WriteLine("Constructung a logging Service");
                 endpointSetup(service);
                 return service;
             });
