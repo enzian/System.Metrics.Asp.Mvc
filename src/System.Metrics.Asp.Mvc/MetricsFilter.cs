@@ -22,7 +22,7 @@ namespace System.Metrics.Asp.Mvc
         {
             return Task.Run(() =>
             {
-                var service = context.HttpContext.RequestServices.GetService(typeof(Endpoint)) as Endpoint;
+                var service = context?.HttpContext?.RequestServices?.GetService(typeof(Endpoint)) as Endpoint;
                 return _handler(service, context, next);
             });
         }

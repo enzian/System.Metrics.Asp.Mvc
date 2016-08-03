@@ -6,11 +6,7 @@ namespace System.Metrics.Asp.Mvc.Extensions
     {
         public static IMetricsBuilder CountHitsTotal(this IMetricsBuilder subject)
         {
-            MetricsHandler handler = delegate (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next)
-            {
-                endpoint.Record<Counting>("overall.total", 1);
-                return next();
-            };
+            MetricsHandler handler = MetricHandlers.Counter("overall.total");
 
             subject.UseMetricsMiddleware(handler);
 

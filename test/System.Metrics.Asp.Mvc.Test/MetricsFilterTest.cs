@@ -13,6 +13,7 @@ namespace System.Metrics.Asp.Mvc.Test
             // Arrange
             var subject = new MetricsFilter();
             var fellThrough = false;
+            
             ResourceExecutionDelegate fakeExec = delegate() {
                 fellThrough = true;
                 return Task.FromResult<ResourceExecutedContext>(null);
