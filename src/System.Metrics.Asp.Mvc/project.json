@@ -26,7 +26,7 @@
     "NETStandard.Library": "1.6.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "System.Metrics": "1.0.0-*",
-    "System.Runtime.Extensions": "4.0.0-*"
+    "System.Runtime.Extensions": "4.1.0-*"
   },
   "frameworks": {
     "netstandard1.6": {
