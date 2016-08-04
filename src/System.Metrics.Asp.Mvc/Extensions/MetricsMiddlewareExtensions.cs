@@ -19,5 +19,14 @@ namespace System.Metrics.Asp.Mvc.Extensions
 
             return subject;
         }
+
+        public static IMetricsBuilder GaugeParallelRequests(this IMetricsBuilder subject, string metric = "overall.total_active")
+        {
+            MetricsHandler handler = MetricHandlers.Gauge(metric);
+
+            subject.UseMetricsMiddleware(handler);
+
+            return subject;
+        }
     }
 }
