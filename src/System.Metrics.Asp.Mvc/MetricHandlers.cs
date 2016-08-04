@@ -33,5 +33,22 @@ namespace System.Metrics.Asp.Mvc
 
             return handler;
         }
+
+        
+        public static MetricsHandler Gauge(string metric)
+        {
+            MetricsHandler handler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            {
+                endpoint.Record<Gauge>(metric, 1, true);
+                
+                var t = await next();
+                
+                endpoint.Record<Gauge>(metric, -1, true);
+
+                return t;
+            };
+
+            return handler;
+        }
     }
 }

@@ -28,5 +28,14 @@ namespace System.Metrics.Asp.Mvc.Extensions
 
             return subject;
         }
+
+        public static IConditionalBuilder If(this IMetricsBuilder subject, MetricsCondition condition)
+        {
+            return new ConditionalBuilder
+            {
+                Predecessor = subject,
+                Condition = condition
+            };
+        }
     }
 }
