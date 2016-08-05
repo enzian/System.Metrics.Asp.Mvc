@@ -12,7 +12,7 @@ namespace System.Metrics.Asp.Mvc.Extensions
 
             services.AddMvcCore(x => x.Filters.Add(metricsFilter));
 
-            services.AddScoped<Endpoint>(x =>
+            services.AddSingleton<Endpoint>(x =>
             {
                 var service = new StandardEndpoint();
                 endpointSetup(service);
