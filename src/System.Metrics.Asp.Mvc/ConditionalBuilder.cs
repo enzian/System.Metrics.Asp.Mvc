@@ -18,16 +18,20 @@ namespace System.Metrics.Asp.Mvc.Extensions
 
         public MetricsHandler UseMetricsMiddleware(MetricsHandler handler)
         {
+            MetricsHandler unconditionalHandler = Predecessor.Handler;
+
             MetricsHandler conditionalHandler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
                 var shouldHandle = Condition(context);
                 
                 if(shouldHandle){
-                     await handler(endpoint, context, next);
+                     return await handler(endpoint, context, next);
                 }
                 
-                return await Predecessor.Handler(endpoint, context, next);
+                return await next();
             };
+
+            Predecessor.UseMetricsMiddleware(conditionalHandler);
 
             return conditionalHandler;
         }

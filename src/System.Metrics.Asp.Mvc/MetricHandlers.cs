@@ -7,10 +7,13 @@ namespace System.Metrics.Asp.Mvc
     {
         public static MetricsHandler Counter(string metric, int increment = 1)
         {
-            MetricsHandler handler = delegate (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next)
+            MetricsHandler handler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
+                var result = await next();
+                
                 endpoint.Record<Counting>(metric, increment);
-                return next();
+
+                return result;
             };
 
             return handler;
