@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata minClientVersion="2.12">
     <id>System.Metrics.Asp.Mvc</id>
-    <version>1.0.0-alpha2</version>
+    <version>1.0.0-alpha3</version>
     <title>System.Metrics.Asp.Mvc</title>
     <authors>Michael (Enzian) Ingold</authors>
     <summary>This is an extension library to System.Metrics it's seamless integration into ASP.Net MVCs architecture.</summary>
