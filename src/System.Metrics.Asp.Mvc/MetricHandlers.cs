@@ -7,7 +7,7 @@ namespace System.Metrics.Asp.Mvc
     {
         public static MetricsHandler Counter(string metric, int increment = 1)
         {
-            MetricsHandler handler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
                 var result = await next();
                 
@@ -22,7 +22,7 @@ namespace System.Metrics.Asp.Mvc
         
         public static MetricsHandler Timer(string metric)
         {
-            MetricsHandler handler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
                 var stopwatch = Stopwatch.StartNew();
                 
@@ -40,7 +40,7 @@ namespace System.Metrics.Asp.Mvc
         
         public static MetricsHandler Gauge(string metric)
         {
-            MetricsHandler handler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
                 endpoint.Record<Gauge>(metric, 1, true);
                 

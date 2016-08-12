@@ -20,7 +20,7 @@ namespace System.Metrics.Asp.Mvc.Extensions
         {
             MetricsHandler unconditionalHandler = Predecessor.Handler;
 
-            MetricsHandler conditionalHandler = async (Endpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            MetricsHandler conditionalHandler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
             {
                 var shouldHandle = Condition(context);
                 

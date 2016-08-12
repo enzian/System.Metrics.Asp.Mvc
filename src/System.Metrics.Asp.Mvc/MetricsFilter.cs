@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace System.Metrics.Asp.Mvc
 {
-    public delegate Task<ResourceExecutedContext> MetricsHandler(Endpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next);
+    public delegate Task<ResourceExecutedContext> MetricsHandler(IMetricsEndpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next);
 
     public delegate bool MetricsCondition(ResourceExecutingContext context);
 
@@ -12,7 +12,7 @@ namespace System.Metrics.Asp.Mvc
     {
         public MetricsFilter()
         {
-           Handler = delegate(Endpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next)
+           Handler = delegate(IMetricsEndpoint metricsEndpoint, ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
                 return next();
             };
@@ -24,7 +24,7 @@ namespace System.Metrics.Asp.Mvc
         {
             return Task.Run(() =>
             {
-                var service = context?.HttpContext?.RequestServices?.GetService(typeof(Endpoint)) as Endpoint;
+                var service = context?.HttpContext?.RequestServices?.GetService(typeof(IMetricsEndpoint)) as IMetricsEndpoint;
                 return Handler(service, context, next);
             });
         }
@@ -32,7 +32,7 @@ namespace System.Metrics.Asp.Mvc
         public MetricsHandler UseMetricsMiddleware(MetricsHandler handler)
         {
             var oldHandler = Handler;
-            MetricsHandler h = delegate(Endpoint metricsEndpoint, ResourceExecutingContext b, ResourceExecutionDelegate c)
+            MetricsHandler h = delegate(IMetricsEndpoint metricsEndpoint, ResourceExecutingContext b, ResourceExecutionDelegate c)
             {
                 ResourceExecutionDelegate next = async () => {
                     return await oldHandler(metricsEndpoint, b, c);
