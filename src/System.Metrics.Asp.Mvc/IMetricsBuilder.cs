@@ -3,8 +3,8 @@ namespace System.Metrics.Asp.Mvc
 {
     public interface IMetricsBuilder
     {
-        MetricsHandler Handler { get; }
+        // MetricsMiddleware Handler { get; }
 
-        MetricsHandler UseMetricsMiddleware(MetricsHandler handler);
+        // MetricsMiddleware UseMetricsMiddleware(MetricsMiddleware handler);
     }
 }

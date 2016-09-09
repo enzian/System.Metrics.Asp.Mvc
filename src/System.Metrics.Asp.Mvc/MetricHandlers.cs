@@ -1,57 +1,55 @@
-using Microsoft.AspNetCore.Mvc.Filters;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace System.Metrics.Asp.Mvc
 {
     public static class MetricHandlers
     {
-        public static MetricsHandler Counter(string metric, int increment = 1)
+        public delegate Task MetricsMiddleware(HttpContext context, IMetricsEndpoint endpoint, Func<Task> next);
+
+        public static MetricsMiddleware Counter(string metric, int increment = 1)
         {
-            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+
+            return async (context, ep, next) =>
             {
-                var result = await next();
-                
-                endpoint.Record<Counting>(metric, increment);
-
-                return result;
+                await next();
+                ep.Record<Counting>(metric, increment);
             };
-
-            return handler;
         }
 
-        
-        public static MetricsHandler Timer(string metric)
+        public static MetricsMiddleware Use(this MetricsMiddleware subject, MetricsMiddleware obj)
         {
-            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            return async (ctx, ep, nxt) =>
+            {
+                await obj(ctx, ep, () => subject(ctx, ep, nxt));
+            };
+        }
+
+
+        public static MetricsMiddleware Timer(string metric)
+        {
+            return async (context, ep, next) =>
             {
                 var stopwatch = Stopwatch.StartNew();
-                
-                var t = await next();
 
-                stopwatch.Stop();
-                endpoint.Record<Timing>(metric, (int)stopwatch.ElapsedMilliseconds);
+                await next();
 
-                return t;
+                ep.Record<Timing>(metric, (int)stopwatch.ElapsedMilliseconds);
             };
-
-            return handler;
         }
 
-        
-        public static MetricsHandler Gauge(string metric)
+
+        public static MetricsMiddleware Gauge(string metric)
         {
-            MetricsHandler handler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+            return async (context, ep, next) =>
             {
-                endpoint.Record<Gauge>(metric, 1, true);
-                
-                var t = await next();
-                
-                endpoint.Record<Gauge>(metric, -1, true);
+                var stopwatch = Stopwatch.StartNew();
 
-                return t;
+                await next();
+
+                ep.Record<Timing>(metric, (int)stopwatch.ElapsedMilliseconds);
             };
-
-            return handler;
         }
     }
 }

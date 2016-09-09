@@ -2,38 +2,38 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace System.Metrics.Asp.Mvc.Extensions
 {
-    internal class ConditionalBuilder : IConditionalBuilder
+    internal class ConditionalBuilder// : IConditionalBuilder
     {
-        public MetricsCondition Condition { get; set; }
+        // public MetricsCondition Condition { get; set; }
 
-        public MetricsHandler Handler
-        {
-            get
-            {
-                throw new NotImplementedException("Cannot receive handler from Conditional Metrics");
-            }
-        }
+        // public MetricsMiddleware Handler
+        // {
+        //     get
+        //     {
+        //         throw new NotImplementedException("Cannot receive handler from Conditional Metrics");
+        //     }
+        // }
 
-        public IMetricsBuilder Predecessor { get; set;}
+        // public IMetricsBuilder Predecessor { get; set;}
 
-        public MetricsHandler UseMetricsMiddleware(MetricsHandler handler)
-        {
-            MetricsHandler unconditionalHandler = Predecessor.Handler;
+        // public MetricsMiddleware UseMetricsMiddleware(MetricsMiddleware handler)
+        // {
+        //     MetricsMiddleware unconditionalHandler = Predecessor.Handler;
 
-            MetricsHandler conditionalHandler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
-            {
-                var shouldHandle = Condition(context);
-                
-                if(shouldHandle){
-                     return await handler(endpoint, context, next);
-                }
-                
-                return await next();
-            };
+        //     MetricsMiddleware conditionalHandler = async (IMetricsEndpoint endpoint, ResourceExecutingContext context, ResourceExecutionDelegate next) =>
+        //     {
+        //         var shouldHandle = Condition(context);
 
-            Predecessor.UseMetricsMiddleware(conditionalHandler);
+        //         if(shouldHandle){
+        //              return await handler(endpoint, context, next);
+        //         }
 
-            return conditionalHandler;
-        }
+        //         return await next();
+        //     };
+
+        //     Predecessor.UseMetricsMiddleware(conditionalHandler);
+
+        //     return conditionalHandler;
+        // }
     }
 }
