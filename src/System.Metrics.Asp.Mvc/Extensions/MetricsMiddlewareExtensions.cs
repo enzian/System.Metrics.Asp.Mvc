@@ -1,43 +1,39 @@
-using static System.Metrics.Asp.Mvc.MetricHandlers;
+using Microsoft.AspNetCore.Http;
 
 namespace System.Metrics.Asp.Mvc.Extensions
 {
     public static class MetricsMiddlewareExtensions
     {
-        // public static IMetricsBuilder CountHitsTotal(this IMetricsBuilder subject, string metric = "overall.total")
-        // {
-        //     MetricsMiddleware handler = MetricHandlers.Counter(metric);
+        
+        /// <Summary>
+        /// conditionally chains multiple middlewares
+        /// </summar>
+        public static MetricsMiddleware UseIf(this MetricsMiddleware subject, Func<HttpContext, bool> condition, Func<MetricsMiddleware, MetricsMiddleware> setup)
+        {
+            return async (ctx, ep, next) => {
+                    MetricsMiddleware finalizer = async (context, _, n) => { await n(); };
 
-        //     subject.UseMetricsMiddleware(handler);
+                    var d = setup(finalizer);
 
-        //     return subject;
-        // }
+                    if(condition(ctx))
+                    {
+                        await d(ctx, ep, () => subject(ctx, ep, next));
+                        return;
+                    }
 
-        // public static IMetricsBuilder TimeTotal(this IMetricsBuilder subject, string metric = "overall.total.duration")
-        // {
-        //     MetricsMiddleware handler = MetricHandlers.Timer(metric);
+                    await subject(ctx, ep, next);
+                };
+        }
 
-        //     subject.UseMetricsMiddleware(handler);
-
-        //     return subject;
-        // }
-
-        // public static IMetricsBuilder GaugeParallelRequests(this IMetricsBuilder subject, string metric = "overall.total_active")
-        // {
-        //     MetricsMiddleware handler = MetricHandlers.Gauge(metric);
-
-        //     subject.UseMetricsMiddleware(handler);
-
-        //     return subject;
-        // }
-
-        // public static IConditionalBuilder If(this IMetricsBuilder subject, MetricsCondition condition)
-        // {
-        //     return new ConditionalBuilder
-        //     {
-        //         Predecessor = subject,
-        //         Condition = condition
-        //     };
-        // }
+        /// <Summary>
+        /// Chains metric middlewares
+        /// </summar>
+        public static MetricsMiddleware Use(this MetricsMiddleware subject, MetricsMiddleware obj)
+        {
+            return async (ctx, ep, nxt) =>
+            {
+                await obj(ctx, ep, () => subject(ctx, ep, nxt));
+            };
+        }
     }
 }

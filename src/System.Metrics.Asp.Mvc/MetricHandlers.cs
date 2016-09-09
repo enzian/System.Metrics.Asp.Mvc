@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace System.Metrics.Asp.Mvc
 {
+    public delegate Task MetricsMiddleware(HttpContext context, IMetricsEndpoint endpoint, Func<Task> next);
+
     public static class MetricHandlers
     {
-        public delegate Task MetricsMiddleware(HttpContext context, IMetricsEndpoint endpoint, Func<Task> next);
-
         public static MetricsMiddleware Counter(string metric, int increment = 1)
         {
 
@@ -17,15 +17,6 @@ namespace System.Metrics.Asp.Mvc
                 ep.Record<Counting>(metric, increment);
             };
         }
-
-        public static MetricsMiddleware Use(this MetricsMiddleware subject, MetricsMiddleware obj)
-        {
-            return async (ctx, ep, nxt) =>
-            {
-                await obj(ctx, ep, () => subject(ctx, ep, nxt));
-            };
-        }
-
 
         public static MetricsMiddleware Timer(string metric)
         {
@@ -44,11 +35,11 @@ namespace System.Metrics.Asp.Mvc
         {
             return async (context, ep, next) =>
             {
-                var stopwatch = Stopwatch.StartNew();
+                ep.Record<Gauge>(metric, 1, true);
 
                 await next();
 
-                ep.Record<Timing>(metric, (int)stopwatch.ElapsedMilliseconds);
+                ep.Record<Gauge>(metric, -1, true);
             };
         }
     }

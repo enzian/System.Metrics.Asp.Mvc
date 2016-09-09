@@ -1,6 +1,3 @@
-using System.Metrics;
-using System.Metrics.Asp.Mvc;
-
 namespace System.Metrics.Asp.Mvc
 {
 

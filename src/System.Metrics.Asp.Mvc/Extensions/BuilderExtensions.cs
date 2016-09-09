@@ -1,19 +1,17 @@
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using static System.Metrics.Asp.Mvc.MetricHandlers;
 
 namespace System.Metrics.Asp.Mvc.Extensions
 {
     public static class MetricsExtensions
     {
-        public static void AddMetrics(this IServiceCollection services, Action<IMetricsBuilder> metricsSetup, Action<IMetricsEndpoint> endpointSetup)
+        /// <Summary>
+        /// Extends the service collection with all services necessary to run metrics
+        /// </summar>
+        public static void AddMetrics(this IServiceCollection services, Action<IMetricsEndpoint> endpointSetup)
         {
             var metricsFilter = new MetricsFilter();
-            // metricsSetup(metricsFilter);
-
             services.AddMvcCore(x => x.Filters.Add(metricsFilter));
 
             services.AddSingleton<IMetricsEndpoint>(x =>
@@ -26,12 +24,19 @@ namespace System.Metrics.Asp.Mvc.Extensions
             services.AddScoped<ITransientMetricsEndpoint>(x => new TransientMetricsEndpoint(x.GetRequiredService<IMetricsEndpoint>()));
         }
 
+        
+        /// <Summary>
+        /// Attach a metrics handler into the request pipe
+        /// </summar>
         public static void UseMetrics(this IApplicationBuilder subject, Func<MetricsMiddleware, MetricsMiddleware> setup)
         {
 
             subject.Use(
                 async (ctx, next) => {
-                    MetricsMiddleware finalizer = async (context, ep, n) => { await n(); };
+                    MetricsMiddleware finalizer = async (context, ep, _) =>
+                    {
+                        await next();
+                    };
 
                     var d = setup(finalizer);
 
@@ -45,6 +50,5 @@ namespace System.Metrics.Asp.Mvc.Extensions
                     await next();
                 });
         }
-
     }
 }
