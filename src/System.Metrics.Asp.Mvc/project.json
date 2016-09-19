@@ -1,8 +1,21 @@
 {
-  "version": "1.0.0-alpha3",
+  "version": "1.0.0-alpha4",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": false
+  },
+  "name": "System.Metrics.Asp.Mvc",
+  "authors": ["Michael (Enzian) Ingold"],
+  "description": "An extension library to System.Metrics to provide seamless integration into ASP.Net MVCs architecture.",
+  "packOptions": {
+    "tags": ["system", "metrics", "aspnet", "core"],
+    "owners": ["Michael (Enzian) Ingold"],
+    "projectUrl": "https://github.com/enzian/System.Metrics.Asp.Mvc",
+    "licenseUrl": "https://raw.githubusercontent.com/enzian/System.Metrics.Asp.Mvc/master/LICENSE.txt",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/enzian/System.Metrics.Asp.Mvc"
+    }
   },
   "dependencies": {
     "NETStandard.Library": "1.6.0",
